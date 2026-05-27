@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>测一测你是黑猫警长中的哪一个角色｜30题精密人格测试</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Segoe UI', -apple-system, sans-serif;
+      background: #0a0c15;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    #app {
+      width: 100%;
+      max-width: 520px;
+      background: linear-gradient(145deg, #111827 0%, #0f1722 100%);
+      border-radius: 40px;
+      box-shadow: 0 25px 45px -12px rgba(0,0,0,0.8);
+      overflow: hidden;
+      border: 1px solid rgba(255,140,66,0.2);
+      transition: all 0.2s;
+    }
+    /* 首页设计 */
+    .home-container {
+      padding: 44px 24px 52px;
+      text-align: center;
+      background: radial-gradient(circle at 30% 10%, #1e293b, #0a0f1a);
+    }
+    .hero-badge {
+      font-size: 82px;
+      margin-bottom: 8px;
+      filter: drop-shadow(0 8px 18px rgba(0,0,0,0.5));
+    }
+    .home-title {
+      font-size: 29px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFD966, #FF8C42);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+      margin: 10px 0 8px;
+    }
+    .home-desc {
+      color: #94a3b8;
+      font-size: 14px;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+    .start-btn {
+      background: linear-gradient(95deg, #FF8C42, #E83E3E);
+      border: none;
+      color: white;
+      font-weight: bold;
+      font-size: 20px;
+      padding: 14px 30px;
+      border-radius: 60px;
+      cursor: pointer;
+      width: 80%;
+      box-shadow: 0 12px 24px -10px #e83e3e80;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .start-btn:active { transform: scale(0.96);}
+    .info-note {
+      margin-top: 28px;
+      font-size: 11px;
+      color: #475569;
+    }
+    /* 答题头部 */
+    .test-header {
+      padding: 20px 20px 6px;
+      text-align: center;
+      background: #0f172a;
+    }
+    .test-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      background: linear-gradient(120deg, #FFD966, #FF8C42);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .progress-area {
+      padding: 8px 20px 0;
+    }
+    .progress-bar-bg {
+      height: 6px;
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #f97316, #ef4444);
+      border-radius: 12px;
+      transition: width 0.25s ease;
+    }
+    .question-wrapper {
+      padding: 16px 20px 32px;
+      animation: fadeSlide 0.3s ease;
+    }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(12px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+    .question-text {
+      background: #1f2a3e;
+      padding: 18px 20px;
+      border-radius: 28px;
+      font-size: 19px;
+      font-weight: 600;
+      color: #f1f5f9;
+      margin-bottom: 24px;
+      border-left: 6px solid #f97316;
+      line-height: 1.4;
+    }
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .opt-btn {
+      background: #182235;
+      border: 1px solid #2d3e5a;
+      border-radius: 20px;
+      padding: 14px 18px;
+      font-size: 15px;
+      text-align: left;
+      font-weight: 500;
+      color: #e2e8f0;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .opt-btn:hover {
+      background: #253653;
+      border-color: #f97316;
+      transform: translateX(4px);
+    }
+    /* 结果页 */
+    .result-container {
+      padding: 32px 24px 40px;
+      text-align: center;
+    }
+    .result-avatar {
+      width: 120px;
+      height: 120px;
+      background: linear-gradient(135deg, #2a3a55, #0f172a);
+      border-radius: 60px;
+      margin: 0 auto 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 70px;
+      border: 3px solid #ff8c42;
+      box-shadow: 0 12px 20px rgba(0,0,0,0.4);
+    }
+    .result-name {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #FFD966, #F97316);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: 8px;
+    }
+    .result-quote {
+      background: #1e2a3e;
+      display: inline-block;
+      padding: 5px 18px;
+      border-radius: 36px;
+      font-size: 13px;
+      color: #facc15;
+      font-style: italic;
+      margin-bottom: 20px;
+    }
+    .result-desc {
+      background: #0f172a80;
+      padding: 18px;
+      border-radius: 28px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: #cbd5e6;
+      text-align: left;
+      margin-bottom: 24px;
+      backdrop-filter: blur(4px);
+    }
+    .traits-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .trait-pill {
+      background: #e83e3e20;
+      border: 1px solid #e83e3e;
+      padding: 5px 16px;
+      border-radius: 40px;
+      font-size: 13px;
+      color: #ffae70;
+      font-weight: 500;
+    }
+    .action-group {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .restart-btn {
+      background: transparent;
+      border: 2px solid #f97316;
+      color: #f97316;
+      padding: 10px 28px;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .restart-btn:hover {
+      background: #f97316;
+      color: white;
+    }
+    .share-btn {
+      background: #2d3a52;
+      border: none;
+      color: #ffd966;
+      padding: 10px 28px;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .share-btn:hover {
+      background: #3b4a6b;
+    }
+    .footer-meta {
+      font-size: 10px;
+      text-align: center;
+      color: #3b4252;
+      margin-top: 24px;
+    }
+    button {
+      font-family: inherit;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- 首页 -->
+  <div v-if="step === 'home'" class="home-container">
+    <div class="hero-badge">🐱‍👤⚡🔍</div>
+    <div class="home-title">黑猫警长·人格档案</div>
+    <div class="home-desc">30题精密测试 · 还原六大核心角色<br>决策/社交/危机/价值观 全维度解析</div>
+    <button class="start-btn" @click="startTest">开始测试</button>
+    <div class="info-note">依据经典原作人设 | 含深度出题逻辑</div>
+  </div>
+
+  <!-- 答题界面 -->
+  <div v-if="step === 'test'">
+    <div class="test-header">
+      <h2>⚡ 第 {{ currentIndex+1 }} / {{ allQuestions.length }} 题</h2>
+    </div>
+    <div class="progress-area">
+      <div class="progress-bar-bg"><div class="progress-fill" :style="{width: progressPercent+'%'}"></div></div>
+    </div>
+    <div class="question-wrapper" :key="currentIndex">
+      <div class="question-text">{{ currentQuestion.text }}</div>
+      <div class="options-grid">
+        <button class="opt-btn" v-for="(opt, idx) in currentQuestion.options" :key="idx" @click="selectAnswer(opt.roleKey)">
+          {{ opt.text }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 结果界面 -->
+  <div v-if="step === 'result' && finalCharacter">
+    <div class="result-container">
+      <div class="result-avatar">{{ finalCharacter.emoji }}</div>
+      <div class="result-name">{{ finalCharacter.name }}</div>
+      <div class="result-quote">「 {{ finalCharacter.quote }} 」</div>
+      <div class="result-desc">{{ finalCharacter.description }}</div>
+      <div class="traits-row">
+        <span class="trait-pill" v-for="t in finalCharacter.traits" :key="t">{{ t }}</span>
+      </div>
+      <div class="action-group">
+        <button class="restart-btn" @click="resetTest">🔁 重新测试</button>
+        <button class="share-btn" @click="copyResult">📋 分享结果</button>
+      </div>
+      <div class="footer-meta">基于30题精密算法 | 解锁你的森林人格</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const { createApp } = Vue;
+
+  // ---------- 六大角色完整资料 (依据文档深度人设) ----------
+  const ROLES_LIB = {
+    black_leader: {
+      name: "黑猫警长",
+      emoji: "🐱‍✈️⚖️",
+      quote: "正义与秩序，容不得半点妥协。",
+      description: "你是天生的正义领袖，冷静理智，责任至上。遇事优先统筹全局，推理细致，决策果断。你坚守规则，公正无私，抗压能力极强，是团队最可靠的定海神针。虽显严肃高冷，但内心坦荡，始终以守护森林为己任。",
+      traits: ["正义领袖", "冷静果决", "责任至上", "大局观强"]
+    },
+    white_dove: {
+      name: "白鸽侦探",
+      emoji: "🕊️🔍",
+      quote: "用翅膀丈量正义，绝不退缩！",
+      description: "你是勇敢热忱的行动先锋，阳光积极，执行拉满。面对危机从不犹豫，善于侦查突破，待人真诚且富有同理心。虽然偶尔急躁，但你的赤诚和正义感能点燃团队，是最可靠的外勤核心。",
+      traits: ["勇敢热忱", "行动力MAX", "敏锐侦察", "真诚善良"]
+    },
+    white_captain: {
+      name: "白猫班长",
+      emoji: "🐱🛡️",
+      quote: "后方交给我，细节绝不遗漏。",
+      description: "你是温柔可靠的守护基石，沉稳踏实，包容隐忍。擅长细节整理与后勤兜底，默默付出从不争功，遇事冷静配合，是团队最不可或缺的坚实后盾。低调温柔，但关键时刻值得信赖。",
+      traits: ["稳重细致", "默默奉献", "包容隐忍", "踏实可靠"]
+    },
+    one_ear: {
+      name: "一只耳",
+      emoji: "🐭🌀",
+      quote: "审时度势，灵活才是生存法则。",
+      description: "你是机灵狡黠的变通者，高情商，善于观察局势。能屈能伸，危机中求生欲极强，鬼点子多且懂得借力。虽然有些利己主义，但聪慧灵活是你的天赋，只要守住底线也能成就独特价值。",
+      traits: ["灵活变通", "高情商", "善于自保", "聪明狡黠"]
+    },
+    eagle_villain: {
+      name: "食猴鹰",
+      emoji: "🦅🔥",
+      quote: "强者不需要解释，碾压一切阻碍。",
+      description: "你是气场全开的强势突破者，果敢直接，杀伐果断。目标感极强，不拖泥带水，拥有强大的掌控力。有时冲动暴躁，若能驯服情绪，将发挥无可匹敌的行动力。",
+      traits: ["强势霸道", "杀伐果断", "自信张扬", "好胜心强"]
+    },
+    mantis_girl: {
+      name: "螳螂姑娘",
+      emoji: "🦗🌸",
+      quote: "温柔有底线，爱恨皆分明。",
+      description: "你是温柔通透的纯粹者，善良真诚，三观正直。共情力强，心思细腻，遇事冷静不盲从。柔软却有原则，从不妥协恶意，自带治愈光芒，是团队中温暖而坚定的存在。",
+      traits: ["温柔通透", "爱恨分明", "善良真诚", "内心纯粹"]
+    }
+  };
+
+  // ---------- 30道精密测试题 (覆盖全部维度，六角色直接映射) ----------
+  // 每道题选项与对应角色严格匹配原作行为模式
+  const QUESTIONS_SET = [
+    { id:1, text: "遇到突发紧急危机时，你第一反应是？", options: [
+      { text:"冷静分析局势，统筹全局方案", roleKey:"black_leader" },
+      { text:"立刻冲上前解决问题", roleKey:"white_dove" },
+      { text:"稳住状态，配合他人做好兜底", roleKey:"white_captain" },
+      { text:"快速观察局势，优先自保找退路", roleKey:"one_ear" },
+      { text:"情绪上头，直接正面硬刚", roleKey:"eagle_villain" },
+      { text:"先平复情绪，理性温和处理", roleKey:"mantis_girl" }
+    ]},
+    { id:2, text: "团队出现失误闯祸，你会？", options: [
+      { text:"公正复盘，主动承担管理责任", roleKey:"black_leader" },
+      { text:"主动帮忙补救，积极解决", roleKey:"white_dove" },
+      { text:"默默收拾残局，包容队友", roleKey:"white_captain" },
+      { text:"悄悄撇清关系，避免牵连", roleKey:"one_ear" },
+      { text:"愤怒指责，情绪化追责", roleKey:"eagle_villain" },
+      { text:"温和沟通，希望大家互相包容", roleKey:"mantis_girl" }
+    ]},
+    { id:3, text: "需要快速做重大决定时，你的风格是？", options: [
+      { text:"理性权衡，果断定夺", roleKey:"black_leader" },
+      { text:"凭直觉热忱快速决策", roleKey:"white_dove" },
+      { text:"谨慎观望，稳妥为主", roleKey:"white_captain" },
+      { text:"看是否对自己有利，利己优先", roleKey:"one_ear" },
+      { text:"随心所欲，强势定夺不听建议", roleKey:"eagle_villain" },
+      { text:"兼顾情理对错，温柔权衡", roleKey:"mantis_girl" }
+    ]},
+    { id:4, text: "计划被突发情况打乱，你会？", options: [
+      { text:"快速调整方案，稳住整体节奏", roleKey:"black_leader" },
+      { text:"立刻切换行动方式继续推进", roleKey:"white_dove" },
+      { text:"略显慌乱但耐心梳理，慢慢调整", roleKey:"white_captain" },
+      { text:"顺势变通，找新突破口规避困境", roleKey:"one_ear" },
+      { text:"烦躁抗拒，想强行恢复原计划", roleKey:"eagle_villain" },
+      { text:"坦然接受变动，温和调整心态", roleKey:"mantis_girl" }
+    ]},
+    { id:5, text: "面对未知风险、陌生危险场景，你会？", options: [
+      { text:"警惕观察，全面分析做好准备", roleKey:"black_leader" },
+      { text:"无所畏惧，主动上前探索", roleKey:"white_dove" },
+      { text:"谨慎观望，跟随他人脚步", roleKey:"white_captain" },
+      { text:"躲在后方观望，绝不冒进", roleKey:"one_ear" },
+      { text:"主动挑战风险，好胜心强", roleKey:"eagle_villain" },
+      { text:"保持善意克制，平稳应对", roleKey:"mantis_girl" }
+    ]},
+    { id:6, text: "发现他人违规犯错，你会？", options: [
+      { text:"依规指正，绝不徇私", roleKey:"black_leader" },
+      { text:"立刻制止，积极劝导", roleKey:"white_dove" },
+      { text:"委婉提醒，给对方改错机会", roleKey:"white_captain" },
+      { text:"事不关己，甚至利用对方错误", roleKey:"one_ear" },
+      { text:"直接强硬指责，不留情面", roleKey:"eagle_villain" },
+      { text:"温和讲道理，善良劝导", roleKey:"mantis_girl" }
+    ]},
+    { id:7, text: "团队陷入僵局、无人推进时，你会？", options: [
+      { text:"主动牵头破局，带领团队", roleKey:"black_leader" },
+      { text:"主动站出来干活，带动节奏", roleKey:"white_dove" },
+      { text:"默默做好自己事，等待安排", roleKey:"white_captain" },
+      { text:"观望局势，等待坐收渔利", roleKey:"one_ear" },
+      { text:"强势催促，推动所有人行动", roleKey:"eagle_villain" },
+      { text:"耐心调和氛围，鼓励共同努力", roleKey:"mantis_girl" }
+    ]},
+    { id:8, text: "遭遇他人误解、冤枉时，你会？", options: [
+      { text:"冷静摆事实讲道理澄清", roleKey:"black_leader" },
+      { text:"积极解释，主动化解误会", roleKey:"white_dove" },
+      { text:"默默忍受，不主动争辩", roleKey:"white_captain" },
+      { text:"顺势辩解，反向利用误会", roleKey:"one_ear" },
+      { text:"瞬间暴怒，强硬反驳", roleKey:"eagle_villain" },
+      { text:"委屈但保持温柔，理性沟通", roleKey:"mantis_girl" }
+    ]},
+    { id:9, text: "日常做事的核心风格是？", options: [
+      { text:"严谨规整，按规则办事", roleKey:"black_leader" },
+      { text:"干脆利落，积极主动", roleKey:"white_dove" },
+      { text:"踏实细致，耐心稳重", roleKey:"white_captain" },
+      { text:"灵活变通，不爱死板", roleKey:"one_ear" },
+      { text:"强势果断，雷厉风行", roleKey:"eagle_villain" },
+      { text:"温柔从容，不急不躁", roleKey:"mantis_girl" }
+    ]},
+    { id:10, text: "面对枯燥琐碎的重复工作，你会？", options: [
+      { text:"认真坚守，一丝不苟", roleKey:"black_leader" },
+      { text:"快速完成，偏爱挑战", roleKey:"white_dove" },
+      { text:"耐心细致，擅长深耕细节", roleKey:"white_captain" },
+      { text:"敷衍偷懒，走捷径", roleKey:"one_ear" },
+      { text:"极度烦躁，无法忍受", roleKey:"eagle_villain" },
+      { text:"平和接受，安稳完成", roleKey:"mantis_girl" }
+    ]},
+    { id:11, text: "你的胜负欲和好胜心如何？", options: [
+      { text:"适度好胜，为责任不为输赢", roleKey:"black_leader" },
+      { text:"积极好胜，愿意争取更好", roleKey:"white_dove" },
+      { text:"淡泊输赢，佛系踏实", roleKey:"white_captain" },
+      { text:"功利好胜，有利则争", roleKey:"one_ear" },
+      { text:"极强好胜，必须赢过所有人", roleKey:"eagle_villain" },
+      { text:"看淡输赢，重在过程", roleKey:"mantis_girl" }
+    ]},
+    { id:12, text: "对待规则和制度的态度？", options: [
+      { text:"绝对遵守维护，规则至上", roleKey:"black_leader" },
+      { text:"自觉遵守，维护公平", roleKey:"white_dove" },
+      { text:"老实遵守，安分守己", roleKey:"white_captain" },
+      { text:"不喜束缚，钻空子变通", roleKey:"one_ear" },
+      { text:"不屑束缚，打破规则", roleKey:"eagle_villain" },
+      { text:"尊重规则兼顾人情温柔", roleKey:"mantis_girl" }
+    ]},
+    { id:13, text: "日常情绪稳定程度？", options: [
+      { text:"极度稳定，理智主导", roleKey:"black_leader" },
+      { text:"积极乐观，偶尔急躁", roleKey:"white_dove" },
+      { text:"温柔平稳，包容度高", roleKey:"white_captain" },
+      { text:"情绪内敛，擅长伪装", roleKey:"one_ear" },
+      { text:"易怒易炸，脾气火爆", roleKey:"eagle_villain" },
+      { text:"柔软敏感，整体平和", roleKey:"mantis_girl" }
+    ]},
+    { id:14, text: "面对他人求助，你会？", options: [
+      { text:"依规帮扶，有原则底线", roleKey:"black_leader" },
+      { text:"热心积极，主动援手", roleKey:"white_dove" },
+      { text:"耐心倾听，尽力帮忙", roleKey:"white_captain" },
+      { text:"有利就帮，利己为先", roleKey:"one_ear" },
+      { text:"心情好就帮，不好拒绝", roleKey:"eagle_villain" },
+      { text:"心软善良，温柔帮扶", roleKey:"mantis_girl" }
+    ]},
+    { id:15, text: "做事习惯更偏向？", options: [
+      { text:"先规划再执行，把控细节", roleKey:"black_leader" },
+      { text:"先行动，边做边调整", roleKey:"white_dove" },
+      { text:"稳步推进，踏实不出错", roleKey:"white_captain" },
+      { text:"随机应变，见机行事", roleKey:"one_ear" },
+      { text:"随心所欲强势推进", roleKey:"eagle_villain" },
+      { text:"从容有序，温柔推进", roleKey:"mantis_girl" }
+    ]},
+    { id:16, text: "你更擅长哪种能力？", options: [
+      { text:"统筹规划、推理分析", roleKey:"black_leader" },
+      { text:"实地侦查、冲锋突破", roleKey:"white_dove" },
+      { text:"细节把控，后勤兜底", roleKey:"white_captain" },
+      { text:"察言观色、避险自保", roleKey:"one_ear" },
+      { text:"强势突破，气场压制", roleKey:"eagle_villain" },
+      { text:"共情调和，明辨是非", roleKey:"mantis_girl" }
+    ]},
+    { id:17, text: "对待输赢和得失的心态？", options: [
+      { text:"重结果与责任不计个人得失", roleKey:"black_leader" },
+      { text:"全力以赴享受过程", roleKey:"white_dove" },
+      { text:"随遇而安，知足常乐", roleKey:"white_captain" },
+      { text:"极度看重个人得失", roleKey:"one_ear" },
+      { text:"输不起，必须占据上风", roleKey:"eagle_villain" },
+      { text:"得失随缘，通透温柔", roleKey:"mantis_girl" }
+    ]},
+    { id:18, text: "与人相处的核心模式？", options: [
+      { text:"公正疏离，公私分明", roleKey:"black_leader" },
+      { text:"阳光开朗，真诚热情", roleKey:"white_dove" },
+      { text:"温柔随和，包容体贴", roleKey:"white_captain" },
+      { text:"圆滑机灵，懂得借力", roleKey:"one_ear" },
+      { text:"强势直接，不喜迁就", roleKey:"eagle_villain" },
+      { text:"温柔纯粹，爱恨分明", roleKey:"mantis_girl" }
+    ]},
+    { id:19, text: "你认为做事最重要的是？", options: [
+      { text:"公平公正，坚守责任", roleKey:"black_leader" },
+      { text:"积极行动，坚守正义", roleKey:"white_dove" },
+      { text:"踏实靠谱，不出差错", roleKey:"white_captain" },
+      { text:"灵活变通，保全自己", roleKey:"one_ear" },
+      { text:"强势高效，掌控局面", roleKey:"eagle_villain" },
+      { text:"善良坦荡，是非分明", roleKey:"mantis_girl" }
+    ]},
+    { id:20, text: "团队分工时，你更愿意选择？", options: [
+      { text:"统筹全局，制定决策", roleKey:"black_leader" },
+      { text:"外出执行，攻坚突破", roleKey:"white_dove" },
+      { text:"后勤保障，细节兜底", roleKey:"white_captain" },
+      { text:"轻松摸鱼，借力他人", roleKey:"one_ear" },
+      { text:"主导核心，指挥他人", roleKey:"eagle_villain" },
+      { text:"温和配合，不争名利", roleKey:"mantis_girl" }
+    ]},
+    { id:21, text: "面对他人的强势压迫，你会？", options: [
+      { text:"冷静依规反击，坚守底线", roleKey:"black_leader" },
+      { text:"勇敢对抗，挺身而出", roleKey:"white_dove" },
+      { text:"隐忍退让，避免冲突", roleKey:"white_captain" },
+      { text:"蛰伏伺机反击", roleKey:"one_ear" },
+      { text:"直接硬刚，绝不低头", roleKey:"eagle_villain" },
+      { text:"理性沟通，温柔坚守", roleKey:"mantis_girl" }
+    ]},
+    { id:22, text: "你最反感的特质是？", options: [
+      { text:"徇私舞弊，破坏规则", roleKey:"black_leader" },
+      { text:"懦弱退缩，违背正义", roleKey:"white_dove" },
+      { text:"浮躁敷衍，不负责任", roleKey:"white_captain" },
+      { text:"死板固执，不懂变通", roleKey:"one_ear" },
+      { text:"软弱无能，优柔寡断", roleKey:"eagle_villain" },
+      { text:"虚伪恶毒，是非不分", roleKey:"mantis_girl" }
+    ]},
+    { id:23, text: "获得功劳时，你的心态是？", options: [
+      { text:"功劳归团队与责任", roleKey:"black_leader" },
+      { text:"开心进取，继续努力", roleKey:"white_dove" },
+      { text:"低调淡然，不争不抢", roleKey:"white_captain" },
+      { text:"极力揽功，获取好处", roleKey:"one_ear" },
+      { text:"骄傲自负，远超他人", roleKey:"eagle_villain" },
+      { text:"平和知足，珍惜当下", roleKey:"mantis_girl" }
+    ]},
+    { id:24, text: "犯错之后，你的第一反应是？", options: [
+      { text:"坦然认错，主动担责", roleKey:"black_leader" },
+      { text:"积极认错，快速补救", roleKey:"white_dove" },
+      { text:"愧疚自省，默默改正", roleKey:"white_captain" },
+      { text:"推卸责任，掩盖错误", roleKey:"one_ear" },
+      { text:"拒不认错，恼羞成怒", roleKey:"eagle_villain" },
+      { text:"真诚反思，温柔改正", roleKey:"mantis_girl" }
+    ]},
+    { id:25, text: "生活中你更偏向？", options: [
+      { text:"自律严谨，高度自制", roleKey:"black_leader" },
+      { text:"活泼积极，热爱挑战", roleKey:"white_dove" },
+      { text:"安稳佛系，踏实度日", roleKey:"white_captain" },
+      { text:"随性慵懒，不爱约束", roleKey:"one_ear" },
+      { text:"张扬强势，随心所欲", roleKey:"eagle_villain" },
+      { text:"温柔细腻，热爱美好", roleKey:"mantis_girl" }
+    ]},
+    { id:26, text: "看待他人的眼光更偏向？", options: [
+      { text:"客观公正，就事论事", roleKey:"black_leader" },
+      { text:"真诚善意，愿意相信", roleKey:"white_dove" },
+      { text:"温柔包容，接纳不完美", roleKey:"white_captain" },
+      { text:"功利审视，判断有无用处", roleKey:"one_ear" },
+      { text:"强势评判，以能力定义", roleKey:"eagle_villain" },
+      { text:"纯粹通透，看人品本心", roleKey:"mantis_girl" }
+    ]},
+    { id:27, text: "遇到难题解决不了时，你会？", options: [
+      { text:"冷静复盘，坚持攻克", roleKey:"black_leader" },
+      { text:"积极请教，绝不放弃", roleKey:"white_dove" },
+      { text:"耐心钻研，不急不躁", roleKey:"white_captain" },
+      { text:"直接放弃，换条捷径", roleKey:"one_ear" },
+      { text:"暴躁硬闯，容易摆烂", roleKey:"eagle_villain" },
+      { text:"坦然接受，不强求结果", roleKey:"mantis_girl" }
+    ]},
+    { id:28, text: "你最看重的个人特质是？", options: [
+      { text:"责任、公正、理智", roleKey:"black_leader" },
+      { text:"勇敢、热忱、正义", roleKey:"white_dove" },
+      { text:"踏实、温柔、耐心", roleKey:"white_captain" },
+      { text:"灵活、聪明、自保", roleKey:"one_ear" },
+      { text:"强势、果敢、霸气", roleKey:"eagle_villain" },
+      { text:"善良、通透、真诚", roleKey:"mantis_girl" }
+    ]},
+    { id:29, text: "面对未知未来，你的心态是？", options: [
+      { text:"沉稳规划，掌控节奏", roleKey:"black_leader" },
+      { text:"充满期待，积极探索", roleKey:"white_dove" },
+      { text:"安稳知足，随遇而安", roleKey:"white_captain" },
+      { text:"随机应变，得过且过", roleKey:"one_ear" },
+      { text:"野心勃勃，掌控一切", roleKey:"eagle_villain" },
+      { text:"温柔接纳，顺其自然", roleKey:"mantis_girl" }
+    ]},
+    { id:30, text: "如果用一种标签定义自己，你更认可？", options: [
+      { text:"理性领导者", roleKey:"black_leader" },
+      { text:"热血行动者", roleKey:"white_dove" },
+      { text:"温柔守护者", roleKey:"white_captain" },
+      { text:"聪明变通者", roleKey:"one_ear" },
+      { text:"强势突破者", roleKey:"eagle_villain" },
+      { text:"善良通透者", roleKey:"mantis_girl" }
+    ]}
+  ];
+
+  createApp({
+    data() {
+      return {
+        step: 'home',            // home, test, result
+        currentIndex: 0,
+        selectedAnswers: [],     // 存储每道题选择的角色key
+        allQuestions: QUESTIONS_SET,
+        rolesMapping: ROLES_LIB
+      };
+    },
+    computed: {
+      currentQuestion() {
+        return this.allQuestions[this.currentIndex];
+      },
+      progressPercent() {
+        return (this.currentIndex / this.allQuestions.length) * 100;
+      },
+      finalCharacter() {
+        if (this.selectedAnswers.length !== this.allQuestions.length) return null;
+        const tally = {
+          black_leader: 0, white_dove: 0, white_captain: 0,
+          one_ear: 0, eagle_villain: 0, mantis_girl: 0
+        };
+        for (let role of this.selectedAnswers) {
+          if (tally[role] !== undefined) tally[role]++;
+        }
+        let maxRole = null;
+        let maxCount = -1;
+        for (let [role, count] of Object.entries(tally)) {
+          if (count > maxCount) {
+            maxCount = count;
+            maxRole = role;
+          }
+        }
+        // 同分情况以核心维度倾向 (黑猫警长优先原则，但这里直接返回最高)
+        if (!maxRole) return this.rolesMapping.black_leader;
+        return this.rolesMapping[maxRole];
+      }
+    },
+    methods: {
+      startTest() {
+        this.step = 'test';
+        this.currentIndex = 0;
+        this.selectedAnswers = [];
+      },
+      selectAnswer(roleKey) {
+        this.selectedAnswers.push(roleKey);
+        if (this.currentIndex + 1 < this.allQuestions.length) {
+          this.currentIndex++;
+        } else {
+          this.step = 'result';
+        }
+      },
+      resetTest() {
+        this.step = 'home';
+        this.currentIndex = 0;
+        this.selectedAnswers = [];
+      },
+      copyResult() {
+        if (!this.finalCharacter) return;
+        const role = this.finalCharacter;
+        const shareText = `我在《黑猫警长》30题人格测试中，测出了【${role.name}】！\n「${role.quote}」\n${role.description}\n你也来测测看，谁是森林中的你？`;
+        navigator.clipboard.writeText(shareText).then(() => {
+          alert("✅ 结果已复制，快分享给朋友吧！");
+        }).catch(() => {
+          alert("复制失败，可以手动截图分享~");
+        });
+      }
+    }
+  }).mount('#app');
+</script>
+</body>
+</html>
